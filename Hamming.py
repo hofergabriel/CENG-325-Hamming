@@ -12,13 +12,29 @@ import random
   n - length of message required
 """
 def makeMessage(n): 
-  return ((123*np.random.rand(1,n)).astype(int)) & 1
-"""
+  return ((123*np.random.rand(n,1)).astype(int)) & 1
 
 """
-def encode():
-  G = np.array( [1,1,0,1], [1,0,1,1], [0,1,1,1], [1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1])
-  print(G) 
+G74:
+  1101
+  1011
+  0111
+  1000
+  0100
+  0010
+  0001
+"""
+def encode(p):
+  G74 = np.array([[1,1,0,1], [1,0,1,1], [0,1,1,1], [1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]])
+  print(G74) 
+  x = np.matmul(G74,p)
+  print("x: ")
+  print(x)
+  x = x & 1
+  print("x: ")
+  print(x)
+  return x
+
 
 """
   changes something in the message
@@ -27,11 +43,25 @@ def encode():
 """
 def makeError(p): pass 
 
+
+
 """
   Determines whether there was an error or not
   returns - z 
+
+  H74:
+    100|1101
+    010|1011
+    001|0111
 """
-def parityCheck(): pass
+def parityCheck(x): 
+  H74 = np.array([[1,0,0,1,1,0,1],[0,1,0,1,0,1,1],[0,0,1,0,1,1,1]])
+  z = np.matmul(H74,x)
+  print("z: ")
+  print(z)
+  z = z & 1
+  print("z: ")
+  print(z)
 
 """
 """
@@ -48,7 +78,9 @@ Used for debugging
 """
 def debug():
   print("debugging") 
-  encode()
+  p=makeMessage(4)
+  x=encode(p)
+  z=parityCheck(x) 
 
 debug()
 
