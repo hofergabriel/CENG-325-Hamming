@@ -9,9 +9,16 @@ import random
 
 """
   returns - p, a message
-  len - length of message required
+  n - length of message required
 """
-def makeMessage(len): pass
+def makeMessage(n): 
+  return ((123*np.random.rand(1,n)).astype(int)) & 1
+"""
+
+"""
+def encode():
+  G = np.array( [1,1,0,1], [1,0,1,1], [0,1,1,1], [1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1])
+  print(G) 
 
 """
   changes something in the message
@@ -37,6 +44,15 @@ def decodeMessage(): pass
 
 
 """
+Used for debugging
+"""
+def debug():
+  print("debugging") 
+  encode()
+
+debug()
+
+"""
   p - the message vector
   pLen - length of p, message
   returns nothing
@@ -52,7 +68,7 @@ def main():
   print("Message: "+message)
 
   # encode (make send vector)
-  sendVector=encode(message,pLen
+  sendVector=encode(message,pLen)
   print("Send Vector: "+sendVector)
 
   # modify the vector to simulate an error or not
@@ -71,11 +87,6 @@ def main():
   pr=decodeMesssage()
   print("Decoded Message: "+pr);
   
-
-
-
-
-
 
 
 
