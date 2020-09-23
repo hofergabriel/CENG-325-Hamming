@@ -25,7 +25,8 @@ def encode(p):
 
 def makeError(p): 
   rdm=random.randint(0,p.shape[0]-1)
-  p[rdm]=p[rdm]^1;
+  p[rdm,0]=p[rdm,0]^1;
+  return p
 
 def parityCheck(r): 
   H74 = np.array([ \
@@ -34,8 +35,9 @@ def parityCheck(r):
     [0,0,0,1,1,1,1]])
   z = np.matmul(H74,r)
   z = z & 1
+  return z
 
-def correctError(): pass
+#def correctError(): pass
 def decodeMessage(r): 
   R74 = np.array([ \
     [0,0,1,0,0,0,0], \
@@ -58,30 +60,30 @@ def main():
   else : pLen=4
 
   # generate random message vector, p, of length 4 or 11 
-  p = makeMessage();
-  print("Message: "+message)
+  p=makeMessage(pLen);
+  print("Message: "+str(p.transpose()))
 
   # encode (make send vector)
-  sendVector=encode(message,pLen)
-  print("Send Vector: "+sendVector)
+  x=encode(p)
+  print("Send Vector: "+str(x.transpose()))
 
   # modify the vector to simulate an error or not
-  recievedMessage=makeError()
-  print("Recieved Message: "+recievedMessage)
+  r=makeError(x)
+  print("Recieved Message: "+str(r.transpose()))
 
   # Parity Check
-  z=parityCheck()
-  print("Parity Check: "+z);
+  z=parityCheck(r)
+  print("Parity Check: "+str(z.transpose()));
 
   # Error Correction
-  correctError()
+  #correctError()
   print("Corrected Message: ")
 
   # Decode Message 
-  pr=decodeMesssage()
-  print("Decoded Message: "+pr);
+  pr=decodeMessage(x)
+  print("Decoded Message: "+str(pr.transpose()));
   
-
+main()
 
 
 
