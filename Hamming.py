@@ -17,7 +17,7 @@ def encodeN(p):
 
   I = np.identity(n).astype(int)
   print("A:")
-  A = np.fliplr((np.identity(n).astype(int)^1)[n-parityBits:][:])
+  A = np.flip((np.identity(n).astype(int)^1)[:parityBits][:],0)
   print(A)
 
   G = np.concatenate((A,I), axis=0)
@@ -27,6 +27,9 @@ def encodeN(p):
 encodeN(np.array([[1,0,1,1,0]]).transpose())
 exit()
 
+def parityCheckN(r):
+  I = np.identity(n).astype(int)
+  A = np.fliplr((np.identity(n).astype(int)^1)[n-parityBits:][:])
 
 
 
