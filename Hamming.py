@@ -12,6 +12,7 @@ def makeMessage(n):
   return np.random.randint(2, size=(n, 1))
 
 def makeError(p): 
+  if random.randint(0,1): return p
   rdm=random.randint(0,p.shape[0]-1)
   p[rdm,0]=p[rdm,0]^1;
   return p
@@ -20,7 +21,8 @@ def correctError(z,r):
   loc=0
   for i in range(0,z.shape[0]):
     loc+=z[i,0]*pow(2,i)
-  print("loc: "+str(loc))
+  if loc==0: return r
+  # print("Location of Error: "+str(loc))
   r[loc-1,0]=r[loc-1,0]^1;
   return r
 
@@ -33,8 +35,6 @@ def parityCheck(H,r):
 def decodeMessage(R,r): 
   return np.matmul(R,r)
 
-
-#encode1511(np.array([[1,1,0,1,0,1,1,0,0,0,1]]).transpose())
 #-----------------------------------------------------------
 def main():
   # enter mode: either (7,4) or (15,11)

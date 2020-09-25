@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage{listings}
 \usepackage{pdfpages}
+\usepackage{amsmath}
 %\usepackage[legalpaper, margin=1in]{geometry}
 \begin{document}
 \begin{titlepage}
@@ -36,74 +37,254 @@
 
 
 \newpage
-\section*{Hamming(7,4)}
-
-First, we need a message, $p$ to work with.
+We randomly create vector $p$ containing either 4 or 11 data bits by calling makeMessage.
+\[
+  p = 
+  \begin{pmatrix}
+    d_1 \\
+    d_2 \\
+    d_3 \\
+    d_4
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+    1 \\
+    0 \\
+    1 \\
+    1
+  \end{pmatrix}
+\]
 \begin{lstlisting}[frame=single,language=Python,caption=makeMessage \label{code:makeMessage}]
 def makeMessage(n): 
   return np.random.randint(2, size=(n, 1))
 \end{lstlisting}
 
-\begin{lstlisting}[frame=single,language=Python,caption=encode74 \label{code:something something}]
-def encode(p):
-  G74=np.array([ \
-    [1,1,0,1], \
-    [1,0,1,1], \
-    [1,0,0,0], \
-    [0,1,1,1], \
-    [0,1,0,0], \
-    [0,0,1,0], \
-    [0,0,0,1]])
-  x = np.matmul(G74,p)
-  x = x & 1
-  return x
+Then we encode $p$ by pre-multiplying $p$ by $G$ modulo 2 in the encode function.
+\[
+  x = Gp = 
+  \begin{pmatrix}
+    1 & 1 & 0 & 1 \\  
+    1 & 0 & 1 & 1 \\ 
+    1 & 0 & 0 & 0 \\  
+    0 & 1 & 1 & 1 \\ 
+    0 & 1 & 0 & 0 \\  
+    0 & 0 & 1 & 0 \\  
+    0 & 0 & 0 & 1 
+  \end{pmatrix}
+  \begin{pmatrix}
+    1 \\
+    0 \\
+    1 \\
+    1
+  \end{pmatrix} 
+  =
+  \begin{pmatrix}
+    2 \\
+    3 \\
+    1 \\
+    2 \\
+    0 \\
+    1 \\
+    1
+  \end{pmatrix} 
+  = 
+  \begin{pmatrix}
+    0 \\
+    1 \\
+    1 \\
+    0 \\
+    0 \\
+    1 \\
+    1 \\
+  \end{pmatrix} 
+\]
+\begin{lstlisting}[frame=single,language=Python,caption=encode \label{code:makeMessage}]
+def encode(G,p):
+  return np.matmul(G,p) & 1
 \end{lstlisting}
-\begin{lstlisting}[frame=single,language=Python,caption=encode74 \label{code:something something}]
+
+We sometimes create an error (flip a bit) in $p$ using the makeError function.  
+\begin{lstlisting}[frame=single,language=Python,caption=makeError \label{code:makeMessage}]
 def makeError(p): 
+  if random.randint(0,1): return p
   rdm=random.randint(0,p.shape[0]-1)
   p[rdm,0]=p[rdm,0]^1;
   return p
 \end{lstlisting}
 
-\begin{lstlisting}[frame=single,language=Python,caption=encode74 \label{code:something something}]
-def parityCheck(r): 
-  H74 = np.array([ \
-    [1,0,1,0,1,0,1], \
-    [0,1,1,0,0,1,1], \
-    [0,0,0,1,1,1,1]])
-  z = np.matmul(H74,r)
-  z = z & 1
-  return z
+We check to see where errors occured by pre-multiplying $x$ by the parity-check matrix, $H$. 
+This is done in parityCheck function.
+\[
+  z = Hr = 
+  \begin{pmatrix}
+    1 & 0 & 1 & 0 & 1 & 0 & 1 \\
+    0 & 1 & 1 & 0 & 0 & 1 & 1 \\
+    0 & 0 & 0 & 1 & 1 & 1 & 1 
+  \end{pmatrix}
+  \begin{pmatrix}
+    0 \\
+    1 \\
+    1 \\
+    0 \\
+    0 \\
+    1 \\
+    1
+  \end{pmatrix} 
+  =
+  \begin{pmatrix}
+    2 \\
+    4 \\
+    2
+  \end{pmatrix} 
+  =
+  \begin{pmatrix}
+    0 \\
+    0 \\
+    0
+  \end{pmatrix}
+\]
+\begin{lstlisting}[frame=single,language=Python,caption=parityCheck \label{code:makeMessage}]
+def parityCheck(H,r): 
+  return np.matmul(H,r) & 1
 \end{lstlisting}
 
-\begin{lstlisting}[frame=single,language=Python,caption=encode74 \label{code:something something}]
-def decodeMessage(r): 
-  R74 = np.array([ \
-    [0,0,1,0,0,0,0], \
-    [0,0,0,0,1,0,0], \
-    [0,0,0,0,0,1,0], \
-    [0,0,0,0,0,0,1]])
-  pr=np.matmul(R74,r)
-  return pr
-\end{lstlisting}
-
-\begin{lstlisting}[frame=single,language=Python,caption=encode74 \label{code:something something}]
+Correct the error by flipping the bit that was incorrect accoring to the syndrome vector $z$.
+\begin{lstlisting}[frame=single,language=Python,caption=correctError \label{code:makeMessage}]
 def correctError(z,r): 
   loc=0
   for i in range(0,z.shape[0]):
     loc+=z[i,0]*pow(2,i)
-  print("loc: "+str(loc))
+  if loc==0: return r
   r[loc-1,0]=r[loc-1,0]^1;
   return r
 \end{lstlisting}
 
+Finally, we decode the message by pre-multiply the encoded message by a decoding matrix $R$.
+\[
+  p_r = Rr = 
+  \begin{pmatrix}
+    0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 1 
+  \end{pmatrix} 
+  \begin{pmatrix}
+    0 \\
+    1 \\
+    1 \\
+    0 \\
+    0 \\
+    1 \\
+    1 
+  \end{pmatrix} 
+  =
+  \begin{pmatrix}
+    1 \\
+    0 \\
+    1 \\
+    1
+  \end{pmatrix} 
+\]
+\begin{lstlisting}[frame=single,language=Python,caption=decodeMessage \label{code:makeMessage}]
+def decodeMessage(R,r): 
+  return np.matmul(R,r)
+\end{lstlisting}
 
+Below is our main function. We hardcoded $G$, $H$, and $R$ according to 
+which mode was entered by the user. Then these three matrices are passed to functions 
+encode, parityCheck, and decode, respectively. I created the (15,11) matrices by 
+looking at the bit patterns in the table in the writeup.
+\begin{lstlisting}[frame=single,language=Python,caption=main \label{code:makeMessage}]
+def main():
+  # enter mode: either (7,4) or (15,11)
+  mode=input("Enter mode: ")
+  if mode=="H1511": 
+    pLen=11
+    G=np.array([
+      [1,1,0,1,1,0,1,0,1,0,1], \
+      [1,0,1,1,0,1,1,0,0,1,1], \
+      [1,0,0,0,0,0,0,0,0,0,0], \
+      [0,1,1,1,0,0,0,1,1,1,1], \
+      [0,1,0,0,0,0,0,0,0,0,0], \
+      [0,0,1,0,0,0,0,0,0,0,0], \
+      [0,0,0,1,0,0,0,0,0,0,0], \
+      [0,0,0,0,1,1,1,1,1,1,1], \
+      [0,0,0,0,1,0,0,0,0,0,0], \
+      [0,0,0,0,0,1,0,0,0,0,0], \
+      [0,0,0,0,0,0,1,0,0,0,0], \
+      [0,0,0,0,0,0,0,1,0,0,0], \
+      [0,0,0,0,0,0,0,0,1,0,0], \
+      [0,0,0,0,0,0,0,0,0,1,0], \
+      [0,0,0,0,0,0,0,0,0,0,1]])
+    H = np.array([ \
+      [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1], \
+      [0,1,1,0,0,1,1,0,0,1,1,0,0,1,1], \
+      [0,0,0,1,1,1,1,0,0,0,0,1,1,1,1], \
+      [0,0,0,0,0,0,0,1,1,1,1,1,1,1,1], \
+      ])
+    R = np.array([ \
+     [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0], \
+     [0,0,0,0,1,0,0,0,0,0,0,0,0,0,0], \
+     [0,0,0,0,0,1,0,0,0,0,0,0,0,0,0], \
+     [0,0,0,0,0,0,1,0,0,0,0,0,0,0,0], \
+     [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0], \
+     [0,0,0,0,0,0,0,0,0,1,0,0,0,0,0], \
+     [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0], \
+     [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0], \
+     [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0], \
+     [0,0,0,0,0,0,0,0,0,0,0,0,0,1,0], \
+     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]])
+  else : 
+    pLen=4
+    G=np.array([ \
+      [1,1,0,1], \
+      [1,0,1,1], \
+      [1,0,0,0], \
+      [0,1,1,1], \
+      [0,1,0,0], \
+      [0,0,1,0], \
+      [0,0,0,1]])
+    H = np.array([ \
+      [1,0,1,0,1,0,1], \
+      [0,1,1,0,0,1,1], \
+      [0,0,0,1,1,1,1]])
+    R = np.array([ \
+      [0,0,1,0,0,0,0], \
+      [0,0,0,0,1,0,0], \
+      [0,0,0,0,0,1,0], \
+      [0,0,0,0,0,0,1]])
 
+  # generate random message vector, p, of length 4 or 11 
+  p=makeMessage(pLen);
+  print("Message:           "+str(p.transpose()))
 
+  # encode (make send vector)
+  x=encode(G,p)
+  print("Send Vector:       "+str(x.transpose()))
 
+  # modify the vector to simulate an error or not
+  r=makeError(x)
+  print("Recieved Message:  "+str(r.transpose()))
 
+  # Parity Check
+  z=parityCheck(H,r)
+  print("Parity Check:      "+str(z.transpose()));
 
+  # Error Correction
+  corrected=correctError(z,r)
+  print("Corrected Message: "+str(corrected.transpose()))
 
+  # Decode Message 
+  pr=decodeMessage(R,x)
+  print("Decoded Message:   "+str(pr.transpose()));
+\end{lstlisting}
+
+\subsection*{Usage:}
+Hamming.py can be run in Ubuntu using the python3 command in the terminal. 
+
+\begin{lstlisting}[frame=single,language=Python,caption=main \label{code:makeMessage}]
+  $ python3 Hamming.py
+\end{lstlisting}
 
 \end{document}
 
