@@ -1,0 +1,109 @@
+\documentclass[12pt]{article}
+\usepackage{listings}
+\usepackage{pdfpages}
+%\usepackage[legalpaper, margin=1in]{geometry}
+\begin{document}
+\begin{titlepage}
+   \begin{center}
+       \vspace*{1cm}
+       \Large
+       Programming Assignment 1
+       \normalsize
+
+       \vspace{0.5cm}
+
+       Author: Gabriel Hofer
+
+       \vspace{0.5cm}
+
+       CSC-325
+
+       \vspace{0.5cm}
+
+       Instructor: Dr. Karlsson
+
+       \vspace{0.5cm}
+
+       Due: September 25, 2020
+
+       \vfill
+
+       Computer Science and Engineering\\
+       South Dakota School of Mines and Technology\\
+   \end{center}
+\end{titlepage}
+%------------------------------------------------------------------------------------
+
+
+\newpage
+\section*{Hamming(7,4)}
+
+First, we need a message, $p$ to work with.
+\begin{lstlisting}[frame=single,language=Python,caption=makeMessage \label{code:makeMessage}]
+def makeMessage(n): 
+  return np.random.randint(2, size=(n, 1))
+\end{lstlisting}
+
+\begin{lstlisting}[frame=single,language=Python,caption=encode74 \label{code:something something}]
+def encode(p):
+  G74=np.array([ \
+    [1,1,0,1], \
+    [1,0,1,1], \
+    [1,0,0,0], \
+    [0,1,1,1], \
+    [0,1,0,0], \
+    [0,0,1,0], \
+    [0,0,0,1]])
+  x = np.matmul(G74,p)
+  x = x & 1
+  return x
+\end{lstlisting}
+\begin{lstlisting}[frame=single,language=Python,caption=encode74 \label{code:something something}]
+def makeError(p): 
+  rdm=random.randint(0,p.shape[0]-1)
+  p[rdm,0]=p[rdm,0]^1;
+  return p
+\end{lstlisting}
+
+\begin{lstlisting}[frame=single,language=Python,caption=encode74 \label{code:something something}]
+def parityCheck(r): 
+  H74 = np.array([ \
+    [1,0,1,0,1,0,1], \
+    [0,1,1,0,0,1,1], \
+    [0,0,0,1,1,1,1]])
+  z = np.matmul(H74,r)
+  z = z & 1
+  return z
+\end{lstlisting}
+
+\begin{lstlisting}[frame=single,language=Python,caption=encode74 \label{code:something something}]
+def decodeMessage(r): 
+  R74 = np.array([ \
+    [0,0,1,0,0,0,0], \
+    [0,0,0,0,1,0,0], \
+    [0,0,0,0,0,1,0], \
+    [0,0,0,0,0,0,1]])
+  pr=np.matmul(R74,r)
+  return pr
+\end{lstlisting}
+
+\begin{lstlisting}[frame=single,language=Python,caption=encode74 \label{code:something something}]
+def correctError(z,r): 
+  loc=0
+  for i in range(0,z.shape[0]):
+    loc+=z[i,0]*pow(2,i)
+  print("loc: "+str(loc))
+  r[loc-1,0]=r[loc-1,0]^1;
+  return r
+\end{lstlisting}
+
+
+
+
+
+
+
+
+
+\end{document}
+
