@@ -8,6 +8,7 @@ import numpy as np
 import random 
 import math
 
+#--------------------------------------------------------------
 def makeMessage(n): 
   return np.random.randint(2, size=(n, 1))
 
@@ -54,6 +55,65 @@ def correctError(z,r):
   print("loc: "+str(loc))
   r[loc-1,0]=r[loc-1,0]^1;
   return r
+#--------------------------------------------------------------
+def encode1511(p):
+  G1511=np.array([
+    [1,1,0,1,1,0,1,0,1,0,1], \
+    [1,0,1,1,0,1,1,0,0,1,1], \
+    [1,0,0,0,0,0,0,0,0,0,0], \
+    [0,1,1,1,0,0,0,1,1,1,1], \
+    [0,1,0,0,0,0,0,0,0,0,0], \
+    [0,0,1,0,0,0,0,0,0,0,0], \
+    [0,0,0,1,0,0,0,0,0,0,0], \
+    [0,0,0,0,1,1,1,1,1,1,1], \
+    [0,0,0,0,1,0,0,0,0,0,0], \
+    [0,0,0,0,0,1,0,0,0,0,0], \
+    [0,0,0,0,0,0,1,0,0,0,0], \
+    [0,0,0,0,0,0,0,1,0,0,0], \
+    [0,0,0,0,0,0,0,0,1,0,0], \
+    [0,0,0,0,0,0,0,0,0,1,0], \
+    [0,0,0,0,0,0,0,0,0,0,1]])
+  print("G1511")
+  print(G1511)
+  x = np.matmul(G1511,p)
+  x = x & 1
+  return x
+
+def parityCheck1511(r): 
+  H1511 = np.array([ \
+    [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1], \
+    [0,1,1,0,0,1,1,0,0,1,1,0,0,1,1], \
+    [0,0,0,1,1,1,1,0,0,0,0,1,1,1,1], \
+    [0,0,0,0,0,0,0,1,1,1,1,1,1,1,1], \
+    ])
+  print("H:")
+  print(H1511)
+  z = np.matmul(H1511,r)
+  z = z & 1
+  return z
+
+def decodeMessage1511(r): 
+  R1511 = np.array([ \
+    [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0], \
+    [0,0,0,0,1,0,0,0,0,0,0,0,0,0,0], \
+    [0,0,0,0,0,1,0,0,0,0,0,0,0,0,0], \
+    [0,0,0,0,0,0,1,0,0,0,0,0,0,0,0], \
+    [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0], \
+    [0,0,0,0,0,0,0,0,0,1,0,0,0,0,0], \
+    [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0], \
+    [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0], \
+    [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0], \
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,1,0], \
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]])
+  pr=np.matmul(R1511,r)
+  return pr
+
+
+
+
+
+
+#encode1511(np.array([[1,1,0,1,0,1,1,0,0,0,1]]).transpose())
 
 #-----------------------------------------------------------
 def main():
@@ -67,7 +127,7 @@ def main():
   print("Message:           "+str(p.transpose()))
 
   # encode (make send vector)
-  x=encode(p)
+  x=encode1511(p)
   print("Send Vector:       "+str(x.transpose()))
 
   # modify the vector to simulate an error or not
@@ -75,7 +135,7 @@ def main():
   print("Recieved Message:  "+str(r.transpose()))
 
   # Parity Check
-  z=parityCheck(r)
+  z=parityCheck1511(r)
   print("Parity Check:      "+str(z.transpose()));
 
   # Error Correction
@@ -83,7 +143,7 @@ def main():
   print("Corrected Message: "+str(corrected.transpose()))
 
   # Decode Message 
-  pr=decodeMessage(x)
+  pr=decodeMessage1511(x)
   print("Decoded Message:   "+str(pr.transpose()));
   
 main()
