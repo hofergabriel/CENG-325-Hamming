@@ -1,9 +1,9 @@
 """-----------------------------------------------------------
   Author: Gabriel Hofer
   Course: CENG-325
+  Instructor: Dr. Karlsson
   Due: September 18, 2020
 -----------------------------------------------------------"""
-
 import numpy as np
 import random 
 import math
@@ -13,6 +13,7 @@ def makeMessage(n):
 
 def makeError(p): 
   if random.randint(0,1): return p
+  # print("***MADE ERROR***")
   rdm=random.randint(0,p.shape[0]-1)
   p[rdm,0]=p[rdm,0]^1;
   return p
@@ -22,7 +23,7 @@ def correctError(z,r):
   for i in range(0,z.shape[0]):
     loc+=z[i,0]*pow(2,i)
   if loc==0: return r
-  # print("Location of Error: "+str(loc))
+  # print("***Location of Error: "+str(loc)+"  ***")
   r[loc-1,0]=r[loc-1,0]^1;
   return r
 
