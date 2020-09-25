@@ -107,7 +107,7 @@ def encode(G,p):
 \newpage
 \noindent Sometimes we create an error (flip a bit) in $p$ using the makeError function. We choose a random number between 0 and 1, like tossing a coin, and if the number is 1, we don't create an error in $p$, otherwise we do. When creating an error we choose a random bit in the message $p$ and flip its bit with an $XOR$ operation.
 \[
-r = x = e_5 = 
+r = x + e_5 = 
 \begin{pmatrix}
   0 \\
   1 \\
@@ -117,7 +117,7 @@ r = x = e_5 =
   1 \\
   1 
 \end{pmatrix} 
-=
++
 \begin{pmatrix}
   0 \\
   0 \\
