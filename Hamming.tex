@@ -256,27 +256,27 @@ def main():
 
   # generate random message vector, p, of length 4 or 11 
   p=makeMessage(pLen);
-  print("Message:           "+str(p.transpose()))
+  print("Message          : "+str(p.transpose()[0]))
 
   # encode (make send vector)
   x=encode(G,p)
-  print("Send Vector:       "+str(x.transpose()))
+  print("Send Vector      : "+str(x.transpose()[0]))
 
   # modify the vector to simulate an error or not
   r=makeError(x)
-  print("Recieved Message:  "+str(r.transpose()))
+  print("Recieved Message : "+str(r.transpose()[0]))
 
   # Parity Check
   z=parityCheck(H,r)
-  print("Parity Check:      "+str(z.transpose()));
+  print("Parity Check     : "+str(z.transpose()[0]));
 
   # Error Correction
   corrected=correctError(z,r)
-  print("Corrected Message: "+str(corrected.transpose()))
+  print("Corrected Message: "+str(corrected.transpose()[0]))
 
   # Decode Message 
   pr=decodeMessage(R,x)
-  print("Decoded Message:   "+str(pr.transpose()));
+  print("Decoded Message  : "+str(pr.transpose()[0]));
 \end{lstlisting}
 
 \subsection*{Usage:}
