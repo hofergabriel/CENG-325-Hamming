@@ -106,7 +106,7 @@ def main():
 
   # modify the vector to simulate an error or not
   r=makeError(x)
-  print("Recieved Message : "+str(r.transpose()[0]))
+  print("Received Message : "+str(r.transpose()[0]))
 
   # Parity Check
   z=parityCheck(H,r)

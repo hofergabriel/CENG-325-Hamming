@@ -35,9 +35,9 @@
 \end{titlepage}
 %------------------------------------------------------------------------------------
 
-
 \newpage
-We randomly create vector $p$ containing either 4 or 11 data bits by calling makeMessage.
+\subsection*{Grade For a B}
+\noindent We randomly create vector $p$ containing either 4 or 11 data bits by calling makeMessage.
 \[
   p = 
   \begin{pmatrix}
@@ -59,7 +59,7 @@ def makeMessage(n):
   return np.random.randint(2, size=(n, 1))
 \end{lstlisting}
 
-Then we encode $p$ by pre-multiplying $p$ by $G$ modulo 2 in the encode function.
+\noindent Then we encode $p$ by pre-multiplying $p$ by $G$ modulo 2 in the encode function.
 \[
   x = Gp = 
   \begin{pmatrix}
@@ -98,12 +98,47 @@ Then we encode $p$ by pre-multiplying $p$ by $G$ modulo 2 in the encode function
     1 \\
   \end{pmatrix} 
 \]
+encode returns the encoded message $x$ which is the result of a matrix multiply modulo 2.
 \begin{lstlisting}[frame=single,language=Python,caption=encode \label{code:makeMessage}]
 def encode(G,p):
   return np.matmul(G,p) & 1
 \end{lstlisting}
 
-We sometimes create an error (flip a bit) in $p$ using the makeError function.  
+\newpage
+\noindent Sometimes we create an error (flip a bit) in $p$ using the makeError function. We choose a random number between 0 and 1, like tossing a coin, and if the number is 1, we don't create an error in $p$, otherwise we do. When creating an error we choose a random bit in the message $p$ and flip its bit with an $XOR$ operation.
+\[
+r = x = e_5 = 
+\begin{pmatrix}
+  0 \\
+  1 \\
+  1 \\
+  0 \\
+  0 \\
+  1 \\
+  1 
+\end{pmatrix} 
+=
+\begin{pmatrix}
+  0 \\
+  0 \\
+  0 \\
+  0 \\
+  1 \\
+  0 \\
+  0 
+\end{pmatrix} 
+=
+\begin{pmatrix}
+  0 \\
+  1 \\
+  1 \\
+  0 \\
+  1 \\
+  1 \\
+  1 \\
+\end{pmatrix} 
+\]
+
 \begin{lstlisting}[frame=single,language=Python,caption=makeError \label{code:makeMessage}]
 def makeError(p): 
   if random.randint(0,1): return p
@@ -112,8 +147,7 @@ def makeError(p):
   return p
 \end{lstlisting}
 
-We check to see where errors occured by pre-multiplying $x$ by the parity-check matrix, $H$. 
-This is done in parityCheck function.
+\noindent We check to see where errors occured by pre-multiplying $r$ by the parity-check matrix $H$ to produce the syndrome vector $z$. 
 \[
   z = Hr = 
   \begin{pmatrix}
@@ -143,12 +177,14 @@ This is done in parityCheck function.
     0
   \end{pmatrix}
 \]
+ParityCheck returns the syndrome vector $z$ which is result of a matrix multiply modulo 2.
 \begin{lstlisting}[frame=single,language=Python,caption=parityCheck \label{code:makeMessage}]
 def parityCheck(H,r): 
   return np.matmul(H,r) & 1
 \end{lstlisting}
 
-Correct the error by flipping the bit that was incorrect accoring to the syndrome vector $z$.
+\newpage
+\noindent Correct the error by flipping the bit that was incorrect accoring to the syndrome vector $z$.
 \begin{lstlisting}[frame=single,language=Python,caption=correctError \label{code:makeMessage}]
 def correctError(z,r): 
   loc=0
@@ -159,7 +195,7 @@ def correctError(z,r):
   return r
 \end{lstlisting}
 
-Finally, we decode the message by pre-multiply the encoded message by a decoding matrix $R$.
+\noindent Finally, we decode the message by pre-multipling the encoded message $r$ by a decoding matrix $R$.
 \[
   p_r = Rr = 
   \begin{pmatrix}
@@ -185,12 +221,14 @@ Finally, we decode the message by pre-multiply the encoded message by a decoding
     1
   \end{pmatrix} 
 \]
+decodeMessage returns the original message $p$ which is the result of a matrix multiply modulo 2.
 \begin{lstlisting}[frame=single,language=Python,caption=decodeMessage \label{code:makeMessage}]
 def decodeMessage(R,r): 
   return np.matmul(R,r)
 \end{lstlisting}
 
-Below is our main function. We hardcoded $G$, $H$, and $R$ according to 
+\newpage
+\noindent Below is our main function. We hardcoded $G$, $H$, and $R$ according to 
 which mode was entered by the user. Then these three matrices are passed to functions 
 encode, parityCheck, and decode, respectively. I created the (15,11) matrices by 
 looking at the bit patterns in the table in the writeup.
@@ -264,7 +302,7 @@ def main():
 
   # modify the vector to simulate an error or not
   r=makeError(x)
-  print("Recieved Message : "+str(r.transpose()[0]))
+  print("Received Message : "+str(r.transpose()[0]))
 
   # Parity Check
   z=parityCheck(H,r)
@@ -279,12 +317,25 @@ def main():
   print("Decoded Message  : "+str(pr.transpose()[0]));
 \end{lstlisting}
 
-\subsection*{Usage:}
-Hamming.py can be run in Ubuntu using the python3 command in the terminal. 
+\subsection*{Usage}
+\noindent Hamming.py can be run in Ubuntu using the python3 command in the terminal. 
 
 \begin{lstlisting}[frame=single,language=Python,caption=main \label{code:makeMessage}]
-  $ python3 Hamming.py
+  > python3 Hamming.py
 \end{lstlisting}
+\subsection*{Libraries Used}
+\noindent I used the Python 3 random, math, and numpy libraries.
+
+\subsection*{Testing and Verification}
+\noindent I tested the program by running the program multiple times on the command line
+and manually checking whether the output was expected.
+
+\subsection*{First-Person vs Third-Person}
+Earlier in this document I spoke in the third-person (we, our) because I was describing 
+a mostly mathematical process. However, toward the end of this document I began 
+speaking in the first person (I, my). At the possibility of any confusion,
+I wanted to clarity that I worked on this project independently. 
+I'll work on being more consistent with my English in the future.
 
 \end{document}
 
